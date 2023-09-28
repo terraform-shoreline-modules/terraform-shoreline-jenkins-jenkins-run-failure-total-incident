@@ -1,15 +1,15 @@
 resource "shoreline_notebook" "jenkins_run_failure_total_incident" {
   name       = "jenkins_run_failure_total_incident"
   data       = file("${path.module}/data/jenkins_run_failure_total_incident.json")
-  depends_on = [shoreline_action.invoke_check_sys_resources,shoreline_action.invoke_restart_jenkins_service]
+  depends_on = [shoreline_action.invoke_memory_disk_network_jenkins_logs,shoreline_action.invoke_restart_jenkins_service]
 }
 
-resource "shoreline_file" "check_sys_resources" {
-  name             = "check_sys_resources"
-  input_file       = "${path.module}/data/check_sys_resources.sh"
-  md5              = filemd5("${path.module}/data/check_sys_resources.sh")
+resource "shoreline_file" "memory_disk_network_jenkins_logs" {
+  name             = "memory_disk_network_jenkins_logs"
+  input_file       = "${path.module}/data/memory_disk_network_jenkins_logs.sh"
+  md5              = filemd5("${path.module}/data/memory_disk_network_jenkins_logs.sh")
   description      = "Infrastructure issues: When running Jenkins on an infrastructure that is not properly set up, there may be issues with resources such as memory, disk space, or network connectivity. This could result in failed jobs and ultimately a total failure of the system."
-  destination_path = "/agent/scripts/check_sys_resources.sh"
+  destination_path = "/agent/scripts/memory_disk_network_jenkins_logs.sh"
   resource_query   = "host"
   enabled          = true
 }
@@ -24,14 +24,14 @@ resource "shoreline_file" "restart_jenkins_service" {
   enabled          = true
 }
 
-resource "shoreline_action" "invoke_check_sys_resources" {
-  name        = "invoke_check_sys_resources"
+resource "shoreline_action" "invoke_memory_disk_network_jenkins_logs" {
+  name        = "invoke_memory_disk_network_jenkins_logs"
   description = "Infrastructure issues: When running Jenkins on an infrastructure that is not properly set up, there may be issues with resources such as memory, disk space, or network connectivity. This could result in failed jobs and ultimately a total failure of the system."
-  command     = "`chmod +x /agent/scripts/check_sys_resources.sh && /agent/scripts/check_sys_resources.sh`"
+  command     = "`chmod +x /agent/scripts/memory_disk_network_jenkins_logs.sh && /agent/scripts/memory_disk_network_jenkins_logs.sh`"
   params      = ["JENKINS_SERVER_ADDRESS"]
-  file_deps   = ["check_sys_resources"]
+  file_deps   = ["memory_disk_network_jenkins_logs"]
   enabled     = true
-  depends_on  = [shoreline_file.check_sys_resources]
+  depends_on  = [shoreline_file.memory_disk_network_jenkins_logs]
 }
 
 resource "shoreline_action" "invoke_restart_jenkins_service" {

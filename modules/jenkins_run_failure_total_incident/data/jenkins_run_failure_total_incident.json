@@ -3,10 +3,6 @@
   "description": "This incident type refers to a situation where there has been a total failure in running Jenkins jobs. Jenkins is a popular automation server used for building, testing, and deploying applications. When such an incident occurs, it can lead to significant downtime and issues in the software development and delivery process. The incident may be triggered by factors such as misconfiguration, code errors, or infrastructure issues. Resolving the issue promptly is critical to minimize the impact on the software development process.",
   "params": [
     {
-      "name": "JOB_NAME",
-      "value": ""
-    },
-    {
       "name": "JENKINS_SERVER_ADDRESS",
       "value": ""
     },
@@ -15,11 +11,15 @@
       "value": ""
     },
     {
-      "name": "JENKINS_PORT",
+      "name": "JOB_NAME",
       "value": ""
     },
     {
       "name": "BUILD_NUMBER",
+      "value": ""
+    },
+    {
+      "name": "JENKINS_PORT",
       "value": ""
     },
     {
@@ -124,7 +124,7 @@
       "name": "cell_15",
       "type": "OP_LANG",
       "enabled": true,
-      "content": "host | host_name=$HOST_NAME | invoke_check_sys_resources($JENKINS_SERVER_ADDRESS)"
+      "content": "host | host_name=$HOST_NAME | invoke_memory_disk_network_jenkins_logs($JENKINS_SERVER_ADDRESS)"
     },
     {
       "name": "cell_16",
