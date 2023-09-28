@@ -1,0 +1,142 @@
+{
+  "name": "jenkins_run_failure_total_incident",
+  "description": "This incident type refers to a situation where there has been a total failure in running Jenkins jobs. Jenkins is a popular automation server used for building, testing, and deploying applications. When such an incident occurs, it can lead to significant downtime and issues in the software development and delivery process. The incident may be triggered by factors such as misconfiguration, code errors, or infrastructure issues. Resolving the issue promptly is critical to minimize the impact on the software development process.",
+  "params": [
+    {
+      "name": "JOB_NAME",
+      "value": ""
+    },
+    {
+      "name": "JENKINS_SERVER_ADDRESS",
+      "value": ""
+    },
+    {
+      "name": "JENKINS_INSTANCE",
+      "value": ""
+    },
+    {
+      "name": "JENKINS_PORT",
+      "value": ""
+    },
+    {
+      "name": "BUILD_NUMBER",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Jenkins run failure total incident\nThis incident type refers to a situation where there has been a total failure in running Jenkins jobs. Jenkins is a popular automation server used for building, testing, and deploying applications. When such an incident occurs, it can lead to significant downtime and issues in the software development and delivery process. The incident may be triggered by factors such as misconfiguration, code errors, or infrastructure issues. Resolving the issue promptly is critical to minimize the impact on the software development process."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## 1. Check the status of the Jenkins service"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `systemctl status jenkins`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## 2. Check the logs for any errors or warnings"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `journalctl -u jenkins --no-pager --since \"2 hours ago\"`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## 3. Verify the Jenkins configuration"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `sudo su - jenkins -c \"java -jar /usr/share/jenkins/jenkins.war --check\"`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## 4. Check the connectivity to the Jenkins instance"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `nc -vz ${JENKINS_INSTANCE} ${JENKINS_PORT}`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## 5. Check the Jenkins job configuration for any errors"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `sudo cat /var/lib/jenkins/jobs/${JOB_NAME}/config.xml`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## 6. Check the Jenkins build history for any failed builds"
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `sudo cat /var/lib/jenkins/jobs/${JOB_NAME}/builds/${BUILD_NUMBER}/log`"
+    },
+    {
+      "name": "cell_14",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Infrastructure issues: When running Jenkins on an infrastructure that is not properly set up, there may be issues with resources such as memory, disk space, or network connectivity. This could result in failed jobs and ultimately a total failure of the system."
+    },
+    {
+      "name": "cell_15",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_check_sys_resources($JENKINS_SERVER_ADDRESS)"
+    },
+    {
+      "name": "cell_16",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Restart the Jenkins server to see if the issue resolves itself."
+    },
+    {
+      "name": "cell_17",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_restart_jenkins_service()"
+    }
+  ]
+}
